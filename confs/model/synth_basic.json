@@ -1,0 +1,5 @@
+{
+    "xdim": 10,
+    "num_hid_units": 3,
+    "activ": "relu"
+}

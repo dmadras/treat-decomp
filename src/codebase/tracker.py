@@ -7,16 +7,20 @@ class Tracker(object):
     def __init__(self, model):
         self.model = model
         self.losses = self._get_losses()
-        self.tensors = self._get_tensors()
+        self.tensors = self._get_model_tensors()
         self.metrics = self._get_metrics()
+        self.track_tensor_names = self._get_track_tensor_names()
 
     def _get_losses(self):
         pass
 
-    def _get_tensors(self):
+    def _get_model_tensors(self):
         pass
 
     def _get_metrics(self):
+        pass
+
+    def _get_track_tensor_names(self):
         pass
 
 class BinaryMLPTracker(Tracker):
@@ -24,18 +28,21 @@ class BinaryMLPTracker(Tracker):
     def _get_losses(self):
         return {'loss': self.model.loss, 'class_loss': self.model.class_loss}
 
-    def _get_tensors(self):
+    def _get_model_tensors(self):
         return {'Y_hat': self.model.Y_hat, 'Y': self.model.Y}
 
     def _get_metrics(self):
         return {'errRate': lambda T: errRate(T['Y'], T['Y_hat'])}
+
+    def _get_track_tensor_names(self):
+        return ['y_cf', 'bayes_f', 'bayes_cf', 't_prob']        
 
 class BinaryCFMLPTracker(Tracker):
 
     def _get_losses(self):
         return {'loss': self.model.loss, 'outcome_loss': self.model.outcome_loss, 'cf_outcome_loss': self.model.cf_outcome_loss}
 
-    def _get_tensors(self):
+    def _get_model_tensors(self):
         return {'outcome_pred': self.model.outcome_preds, 'outcome': self.model.Y, \
                 'cf_outcome_pred': self.model.cf_outcome_preds, 'cf_outcome': self.model.Y_cf, 'treatment': self.model.T}
 
@@ -52,4 +59,8 @@ class BinaryCFMLPTracker(Tracker):
                 'cf_AUC': lambda T: AUC(T['cf_outcome'], T['cf_outcome_pred'])
                 }
 
+    def _get_track_tensor_names(self):
+        return ['y_cf', 'bayes_f', 'bayes_cf', 't_prob']        
 
+
+    

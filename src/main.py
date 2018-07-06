@@ -18,8 +18,6 @@ parser.add_argument('-pa', '--patience', help='training patience for early stopp
 parser.add_argument('-bs', '--batch_size', help='batch size for training', default=64, type=int)
 parser.add_argument('-dseed', '--data_random_seed', help='data random seed', default=0, type=int)
 parser.add_argument('-mseed', '--model_random_seed', help='model random seed', default=0, type=int)
-parser.add_argument('-fl', '--prob_proxy_flip', help='in twins, probability of flipping gestat10 proxy', default=0.3, type=float)
-parser.add_argument('-nsg', '--num_synth_gen', help='in synth_paper, number of generated synthetic examples', default=1000, type=int)
 parser.add_argument('-dirs', '--dirconf', help='config file for dirs', default='madras-vector.json')
 args = vars(parser.parse_args())
 
@@ -28,7 +26,6 @@ args = vars(parser.parse_args())
 dirs = load_dirs_config(args) 
 data_kwargs = load_data_config(args, dirs)
 model_kwargs = load_model_config(args, dirs)
-# data_kwargs, model_kwargs = get_default_kwargs(args, dirs)
 
 #get dataset
 data = Dataset(**data_kwargs)

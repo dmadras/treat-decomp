@@ -17,7 +17,7 @@ def choose_observed_treatment(x):
     t_obs_prob = np.expand_dims(sigmoid(np.sum(x, axis=1)), 1) 
     t_obs = np.random.binomial(1, t_obs_prob)
     t_obs_cf = 1 - t_obs 
-    return t_obs, t_obs_cf
+    return t_obs, t_obs_cf, t_obs_prob
 
 def calculate_bayes_opt(y0_prob, y1_prob, t_obs, t_obs_cf):
     bayes_opt_pred_t0 = np.round(y0_prob)
@@ -28,13 +28,13 @@ def calculate_bayes_opt(y0_prob, y1_prob, t_obs, t_obs_cf):
 
 def get_treatment_outcome_data(x, a, z):
     y0, y1, y0_prob, y1_prob = generate_outcomes(x)
-    t_obs, t_obs_cf = choose_observed_treatment(x)
+    t_obs, t_obs_cf, t_obs_prob = choose_observed_treatment(x)
     y_factual = np.multiply(y0, 1 - t_obs) + np.multiply(y1, t_obs)
     y_counterfactual = np.multiply(y0, t_obs) + np.multiply(y1, 1 - t_obs)
     bayes_opt_pred_f, bayes_opt_pred_cf = calculate_bayes_opt(y0_prob, y1_prob, t_obs, t_obs_cf)
     return {'X': x, 'Y': np.concatenate([y0, y1], axis=1), 'A': a, \
             'T_f': t_obs, 'T_cf': t_obs_cf, 'Y_f': y_factual, 'Y_cf': y_counterfactual, 'Z': z, 
-            'bayes_f': bayes_opt_pred_f, 'bayes_cf': bayes_opt_pred_cf}
+            'bayes_f': bayes_opt_pred_f, 'bayes_cf': bayes_opt_pred_cf, 'T_prob': t_obs_prob}
 
 
 def generate_factual_data(mu, sd, n, xdim, a_value):

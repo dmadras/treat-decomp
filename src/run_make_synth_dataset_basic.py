@@ -3,7 +3,7 @@ from dataproc.create_data_splits import main as create_data_splits
 
 seed = 0
 fnames = {
-        'data_dir_out': '/scratch/gobi1/madras/synth_treatments_basic',
+        'data_dir_out': '/scratch/gobi1/madras/datasets/synth_treatments_basic',
         'data_fout_name': 'synth_treatments_basic.npz'
         }
 

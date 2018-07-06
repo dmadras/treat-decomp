@@ -1,0 +1,6 @@
+made synth data
+figuring out how to calculate the different decompositions
+first experiment is to train a model and track the decompositions through training
+second experiment will be to do some active learning stuff
+building out the decomposition calculation code
+code runs. decompositions look reasonable

@@ -1,0 +1,7 @@
+*.pyc
+*.vim
+val_covar
+tfboard_logs/*
+*.swp
+*DS_Store
+*.nfs*

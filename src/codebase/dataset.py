@@ -19,15 +19,16 @@ class Dataset(object):
             dat = np.load(self.npzfile)
             self.dat = dat
             phases = ['train', 'valid', 'test']
-            self.name_mapping = {'x': 'X', 'y_values': 'Y', 'a': 'A', 't_f': 'T_f', 't_cf': 'T_cf',
-                            'y_f': 'Y_f', 'y_cf': 'Y_cf', 'z': 'Z', 'bayes_f': 'bayes_cf': 'bayes_cf',
-                            'x_unb': 'X_unb', 'y_values_unb': 'Y_unb', 'a_unb': 'A_unb', 't_f_unb': 'T_f_unb', 't_cf_unb': 'T_cf_unb',
-                            'y_f_unb': 'Y_f_unb', 'y_cf_unb': 'Y_cf_unb', 'z_unb': 'Z_unb', 'bayes_f_unb': 'bayes_cf_unb': 'bayes_cf_unb'}
-            self.tensors = {name: {phase: dat['{}_{}'.format(self.name_mapping[name], phase)]} for name in self.name_mapping}
+            self.name_mapping = {'x': 'X', 'y_values': 'Y', 'a': 'A', 't_f': 'T_f', 't_cf': 'T_cf', \
+                    'y_f': 'Y_f', 'y_cf': 'Y_cf', 'z': 'Z', 'bayes_f': 'bayes_f', 'bayes_cf': 'bayes_cf', 't_prob': 'T_prob', \
+                            'x_unb': 'X_unb', 'y_values_unb': 'Y_unb', 'a_unb': 'A_unb', 't_f_unb': 'T_f_unb', 't_cf_unb': 'T_cf_unb', \
+                            'y_f_unb': 'Y_f_unb', 'y_cf_unb': 'Y_cf_unb', 'z_unb': 'Z_unb', 'bayes_f_unb': 'bayes_f_unb', 'bayes_cf_unb': 'bayes_cf_unb', \
+                            't_prob_unb': 'T_prob_unb'}
+            self.tensors = {name: {phase: dat['{}_{}'.format(self.name_mapping[name], phase)] for phase in phases} for name in self.name_mapping}
             self.loaded = True
 
     def get_batch_iterator(self, phase, mb_size):
-        names = self.name_mapping.keys()
+        names = list(self.name_mapping.keys())
         tensors = [self.tensors[name][phase] for name in names]
         sz = tensors[0].shape[0]
         batch_inds = make_batch_inds(sz, mb_size, self.seed, phase)

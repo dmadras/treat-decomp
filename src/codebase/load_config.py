@@ -30,7 +30,7 @@ def load_model_config(args, dirs):
         'tdim': 1,
         'hidden_layer_specs': {
             'activ': model_config_opts['activ'],
-            'layer_sizes': [model_kwargs['num_hid_units'] for layer in range(args['num_hid_layers'])] 
+            'layer_sizes': [model_config_opts['num_hid_units'] for layer in range(args['num_hid_layers'])] 
             },
         'seed': args['model_random_seed']
         }

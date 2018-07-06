@@ -1,0 +1,5 @@
+{
+    "name": "synth_basic",
+    "npzfile": "synth_treatments_basic/synth_treatments_basic.npz",
+    "npz_format_args": []
+}
