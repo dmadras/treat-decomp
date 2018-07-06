@@ -7,3 +7,4 @@ code runs. decompositions look reasonable
 next step is getting tensorboard working, and logging also, to track the step by step progression of these things
 when running model, looks like value is almost optimal, but L_do is way worse than L ... why? Bug?
 maybe the imbalance is related? I generated some pretty imbalanced data
+as the dataset becomes less imbalanced, treatment shift gets smaller. matches more closely to the values of V
