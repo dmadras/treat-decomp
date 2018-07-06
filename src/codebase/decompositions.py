@@ -32,8 +32,6 @@ def calculate_policy_values(D):
     #calculate value of optimal policy on unbiased sample
     trmt_star = choose_treatment(D['unbiased']['bayes_cf'], D['unbiased']['bayes_f'])
     V_star = calculate_value(trmt_star, D['unbiased']['cf_outcome'], D['unbiased']['outcome'])
-    print(D['normal']['bayes_cf'].shape, D['unbiased']['bayes_cf'].shape)
-    print(np.mean(D['normal']['bayes_cf']), np.mean(D['unbiased']['bayes_cf']))
     return {'V': V,
             'V_sample': V_sample,
             'V_treat': V_treat,
@@ -51,19 +49,14 @@ def calculate_outcome_prediction_decomposition(D):
     t_prob = D['normal']['t_prob']
     prob_t1 = np.greater(t_prob, 0.5)
     trmt_likely = np.equal(D['normal']['treatment'], prob_t1.astype(float))
-    print(prob_t1[:10], D['normal']['treatment'][:10])
-    print(np.mean(trmt_likely))
     likely_trmt_outcomes = switch(D['normal']['cf_outcome'], D['normal']['outcome'], trmt_likely)
     unlikely_trmt_outcomes = switch(D['normal']['cf_outcome'], D['normal']['outcome'], 1 - trmt_likely)
     likely_trmt_preds = switch(D['normal']['cf_outcome_pred'], D['normal']['outcome_pred'], trmt_likely)
     unlikely_trmt_preds = switch(D['normal']['cf_outcome_pred'], D['normal']['outcome_pred'], 1 - trmt_likely)
     L_likely_trmts = ce(likely_trmt_outcomes, likely_trmt_preds)
     L_unlikely_trmts = ce(unlikely_trmt_outcomes, unlikely_trmt_preds)
-    print(L_likely_trmts.shape, L_unlikely_trmts.shape, t_prob.shape, L.shape, L_do.shape)
-    print(L_likely_trmts[:10], L_unlikely_trmts[:10], L, L_do)
     delta_t_prob = np.abs(t_prob - 0.5)
     treatment_shift_loss = np.mean(np.multiply(delta_t_prob, L_unlikely_trmts - L_likely_trmts))
-    print(np.mean(delta_t_prob), np.mean(L_unlikely_trmts), np.mean(L_likely_trmts))
     return {'L': L, 'L_do': L_do, 't_shift': treatment_shift_loss}
 
     

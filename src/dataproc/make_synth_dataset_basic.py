@@ -7,14 +7,14 @@ def generate_normal_data(mu, sd, n, xdim):
     return np.random.normal(mu, sd, size=(n, xdim))
 
 def generate_outcomes(x):
-    y0_prob = np.expand_dims(sigmoid(np.sum(x, axis=1)), 1)
-    y1_prob = np.expand_dims(sigmoid(-np.sum(x, axis=1)), 1)
+    y0_prob = np.expand_dims(sigmoid(np.sum(x, axis=1) / 2.), 1)
+    y1_prob = np.expand_dims(sigmoid(-np.sum(x, axis=1) / 2.), 1)
     y0 = np.random.binomial(1, y0_prob)
     y1 = np.random.binomial(1, y1_prob)
     return y0, y1, y0_prob, y1_prob 
 
 def choose_observed_treatment(x):
-    t_obs_prob = np.expand_dims(sigmoid(np.sum(x, axis=1)), 1) 
+    t_obs_prob = np.expand_dims(sigmoid(np.sum(x, axis=1) / 2.), 1) 
     t_obs = np.random.binomial(1, t_obs_prob)
     t_obs_cf = 1 - t_obs 
     return t_obs, t_obs_cf, t_obs_prob

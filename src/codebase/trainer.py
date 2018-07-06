@@ -64,7 +64,6 @@ class Trainer(object):
 
 
     def get_tracking_tensor_dict(self, minibatch, track_names, bias_type='normal'):
-        # track_tensor_names_base = ['y_cf', 'bayes_f', 'bayes_cf', 't_prob']
         if bias_type == 'normal':
             return {name: minibatch[name] for name in track_names}
         if bias_type == 'flipped':
