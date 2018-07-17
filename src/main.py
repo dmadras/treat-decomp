@@ -43,7 +43,7 @@ print('Model loaded.')
 with tf.Session() as sess:
     print('Session created.')
     resdirname = os.path.join(dirs['exp'], args['name'])
-    logdirname = os.path.join(dirs['log'], args['name'])
+    logdirname = os.path.join(dirs['log'], args['name'], 'tb_log')
     ckptdirname = os.path.join(resdirname, 'checkpoints')
     for d in [resdirname, logdirname, ckptdirname]:
         make_dir_if_not_exist(d)
