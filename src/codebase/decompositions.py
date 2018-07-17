@@ -37,6 +37,18 @@ def calculate_policy_values(D):
             'V_treat': V_treat,
             'V_star': V_star}
 
+def calculate_policy_decomposition(D):
+    policy_values = calculate_policy_values(D)
+    regret_from_databias = policy_values['V_sample'] - policy_values['V']
+    regret_from_learning = policy_values['V_treat'] - policy_values['V']
+    regret_from_learning_unbiased = policy_values['V_star'] - policy_values['V_sample']
+    regret_from_databias_optfn = policy_values['V_star'] - policy_values['V_treat']
+    diffs = {'V_regret_databias': regret_from_databias,
+             'V_regret_fnlearn': regret_from_learning,
+             'V_regret_fnlearn_unbiased': regret_from_learning_unbiased,
+             'V_regret_databias_optfn': regret_from_databias_optfn}
+    return {**diffs, **policy_values}
+
 def calculate_outcome_prediction_decomposition(D):
     #L, L_do, treatment_shift: L_do = L + treatment_shift
     #L
@@ -57,7 +69,7 @@ def calculate_outcome_prediction_decomposition(D):
     L_unlikely_trmts = ce(unlikely_trmt_outcomes, unlikely_trmt_preds)
     delta_t_prob = np.abs(t_prob - 0.5)
     treatment_shift_loss = np.mean(np.multiply(delta_t_prob, L_unlikely_trmts - L_likely_trmts))
-    return {'L': L, 'L_do': L_do, 't_shift': treatment_shift_loss}
+    return {'L': L, 'L_do': L_do, 'L_t_shift': treatment_shift_loss}
 
     
 

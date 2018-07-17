@@ -36,7 +36,6 @@ def get_treatment_outcome_data(x, a, z):
             'T_f': t_obs, 'T_cf': t_obs_cf, 'Y_f': y_factual, 'Y_cf': y_counterfactual, 'Z': z, 
             'bayes_f': bayes_opt_pred_f, 'bayes_cf': bayes_opt_pred_cf, 'T_prob': t_obs_prob}
 
-
 def generate_factual_data(mu, sd, n, xdim, a_value):
     x = generate_normal_data(mu, sd, n, xdim)
     a = np.full((n, 1), a_value)
@@ -55,16 +54,19 @@ def main(seed, num_data, xdim, mu0, mu1, sd0, sd1, p0):
     p1 = 1. - p0
     n = num_data
     n0 = int(n * p0); n1 = int(n * p1)
+    #make dataset 0
     x0, a0, z0 = generate_factual_data(mu0, sd0, n0, xdim, 0)    
-    x1, a1, z1 = generate_factual_data(mu1, sd1, n1, xdim, 1)    
     x0_cf, a0_cf, z0_cf = generate_counterfactual_data(x0, a0, z0, mu0, sd0, mu1, sd1)
-    x1_cf, a1_cf, z1_cf = generate_counterfactual_data(x1, a1, z1, mu1, sd1, mu0, sd0)
     dat0 = get_treatment_outcome_data(x0, a0, z0) 
-    dat1 = get_treatment_outcome_data(x1, a1, z1) 
     dat0_cf = get_treatment_outcome_data(x0_cf, a0_cf, z0_cf) 
-    dat1_cf = get_treatment_outcome_data(x1_cf, a1_cf, z1_cf) 
     save_dict_f = {k: np.concatenate([dat0[k], dat1[k]], axis=0) for k in dat0}
+    #make dataset 1
+    x1, a1, z1 = generate_factual_data(mu1, sd1, n1, xdim, 1)    
+    x1_cf, a1_cf, z1_cf = generate_counterfactual_data(x1, a1, z1, mu1, sd1, mu0, sd0)
+    dat1 = get_treatment_outcome_data(x1, a1, z1) 
+    dat1_cf = get_treatment_outcome_data(x1_cf, a1_cf, z1_cf) 
     save_dict_cf = {k: np.concatenate([dat0_cf[k], dat1_cf[k]], axis=0) for k in dat0_cf}
+    #save data
     save_dict = {}
     for k in save_dict_f: save_dict[k] = save_dict_f[k]
     for k in save_dict_cf: save_dict['{}_unb'.format(k)] = save_dict_cf[k]

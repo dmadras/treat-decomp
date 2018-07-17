@@ -3,7 +3,7 @@ import tensorflow as tf
 import os
 from codebase.metrics import *
 from codebase.utils import make_dir_if_not_exist
-from codebase.decompositions import calculate_policy_values, calculate_outcome_prediction_decomposition
+from codebase.decompositions import calculate_policy_decomposition, calculate_outcome_prediction_decomposition
 
 # defaults
 BATCH_SIZE = 32
@@ -113,6 +113,9 @@ class Trainer(object):
     def train(self, n_epochs, patience):
         min_val_loss, min_epoch = np.finfo(np.float32).max, -100
         tracker = self.model.tracker
+        if not self.logs_path is None:
+            # Create new Summary objects - move this to external file maybe
+            summary_writer = tf.summary.FileWriter(self.logs_path, self.sess.graph)
 
         save_path = os.path.join(self.checkpoint_path, 'model.ckpt')
         for epoch in range(n_epochs):
@@ -128,8 +131,6 @@ class Trainer(object):
 
             #do tensorboard tracking (maybe)
             if not self.logs_path is None:
-                # Create new Summary objects - move this to external file maybe
-                summary_writer = tf.summary.FileWriter(self.logs_path, self.sess.graph)
                 summary = tf.Summary()
                 for l in tracker.losses.keys():
                     summary.value.add(tag=l, simple_value=valid_L[l])
@@ -162,7 +163,7 @@ class Trainer(object):
         for bias_type in ['normal', 'flipped', 'unbiased']:
             _, t, _,  _ = self.run_epoch_and_get_metrics(phase, tracker, epoch, bias_type=bias_type)
             pred_results[bias_type] = t
-        value_decomp = calculate_policy_values(pred_results)
+        value_decomp = calculate_policy_decomposition(pred_results)
         loss_decomp = calculate_outcome_prediction_decomposition(pred_results)
         return {**value_decomp, **loss_decomp}
 

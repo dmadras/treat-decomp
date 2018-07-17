@@ -1,0 +1,3 @@
+tensorflow set up
+calculating differences in V values in decompositions.py
+interesting - breaking down by databias then by function loss shows how the loss incurred by data sampling starts increasing partway through training, loss incurred by function learning keeps decreasing
