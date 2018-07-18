@@ -52,16 +52,14 @@ class Trainer(object):
 
 
     def make_feed_dict(self, minibatch, bias_type='normal'):
+        feed_pairs = {'x': self.model.X, 'y_f': self.model.Y,
+                'y_cf': self.model.Y_cf, 't_f': self.model.T, 'a': self.model.A}
         if bias_type == 'normal':
-            return {self.model.X: minibatch['x'], self.model.Y: minibatch['y_f'],
-                     self.model.Y_cf: minibatch['y_cf'], self.model.T: minibatch['t_f']}
+            return {feed_pairs[k]: minibatch[k] for k in feed_pairs}
         if bias_type == 'flipped':
-            return {self.model.X: minibatch['x_unb'], self.model.Y: minibatch['y_f_unb'],
-                     self.model.Y_cf: minibatch['y_cf_unb'], self.model.T: minibatch['t_f_unb']}
+            return {feed_pairs[k]: minibatch[k + '_unb'] for k in feed_pairs}
         if bias_type == 'unbiased':
-            return {self.model.X: get_unbiased_tensor(minibatch, 'x'), self.model.Y: get_unbiased_tensor(minibatch, 'y_f'),
-                     self.model.Y_cf: get_unbiased_tensor(minibatch, 'y_cf'), self.model.T: get_unbiased_tensor(minibatch, 't_f')}
-
+            return {feed_pairs[k]: get_unbiased_tensor(minibatch, k) for k in feed_pairs}
 
     def get_tracking_tensor_dict(self, minibatch, track_names, bias_type='normal'):
         if bias_type == 'normal':
@@ -98,10 +96,13 @@ class Trainer(object):
             met_dict[m] = m_fn(tensors)
         return met_dict
 
+    def filter_keys(self, d):
+        return list(filter(lambda k: not 'A=0' in k and not 'A=1' in k, d.keys()))
+
     def create_res_str(self, epoch, L, M):
         ep_str = 'E{:d}: '.format(epoch) if not epoch is None else 'Final: '
-        res_str = ep_str + ', '.join(['{}:{:.3f}'.format(l, L[l]) for l in L]) \
-                        + ', ' + ', '.join(['{}:{:.3f}'.format(m, M[m]) for m in M])
+        res_str = ep_str + ', '.join(['{}:{:.3f}'.format(l, L[l]) for l in self.filter_keys(L)]) \
+                        + ', ' + ', '.join(['{}:{:.3f}'.format(m, M[m]) for m in self.filter_keys(M)])
         return res_str
 
     def run_epoch_and_get_metrics(self, phase, tracker, epoch, bias_type='normal'):
@@ -116,15 +117,14 @@ class Trainer(object):
         if not self.logs_path is None:
             # Create new Summary objects - move this to external file maybe
             summary_writer = tf.summary.FileWriter(self.logs_path, self.sess.graph)
+        train_metrics_log = os.path.join(self.results_path, 'train_results.csv')
+        valid_metrics_log = os.path.join(self.results_path, 'valid_results.csv')
 
         save_path = os.path.join(self.checkpoint_path, 'model.ckpt')
         for epoch in range(n_epochs):
             train_L, train_T, train_metrics, train_res_str = self.run_epoch_and_get_metrics('train', tracker, epoch)
             valid_L, valid_T, valid_metrics, valid_res_str = self.run_epoch_and_get_metrics('valid', tracker, epoch)
 
-            #do a simple command line print
-            msg = 'Train: {} | Valid: {}'.format(train_res_str, valid_res_str)
-            print(msg)
 
             #do decomposition tracking on test set
             test_decomp_results = self.get_loss_decompositions('test', tracker, epoch)
@@ -134,13 +134,21 @@ class Trainer(object):
                 summary = tf.Summary()
                 for l in tracker.losses.keys():
                     summary.value.add(tag=l, simple_value=valid_L[l])
-                for m in tracker.metrics:
+                for m in tracker.base_metrics:
                     summary.value.add(tag=m, simple_value=valid_metrics[m])
                 for d in test_decomp_results:
                     summary.value.add(tag=d, simple_value=test_decomp_results[d])
                     
                 summary_writer.add_summary(summary, epoch)
                 summary_writer.flush()
+
+            #do a simple command line print
+            msg = 'Train: {} | Valid: {}'.format(train_res_str, valid_res_str)
+            print(msg)
+            self.save_results(train_L, {**train_metrics, **test_decomp_results}, train_metrics_log, write_headers=epoch == 0)
+            self.save_results(valid_L, {**valid_metrics, **test_decomp_results}, valid_metrics_log, write_headers=epoch == 0)
+            print('Metrics saved to {}'.format(train_metrics_log))
+            print('Metrics saved to {}'.format(valid_metrics_log))
 
             #if min validation loss, checkpoint model
             l = valid_L['loss']
@@ -178,28 +186,31 @@ class Trainer(object):
         
         #do a simple command line print
         msg = 'Test: {}'.format(test_res_str)
+        print(msg)
         
         #save results and tensors
-        self.save_results(test_L, {**test_metrics, **test_decomp_results})
-        self.save_tensors(test_T)
-        print(msg)
-
-    def save_results(self, test_L, test_M):
         testcsvname = os.path.join(self.results_path, 'test_results.csv')
-        testcsv = open(testcsvname, 'w')
-        # D is a dictionary of metrics: string to float
-        for D in [test_L, test_M]:
-            for k in D:
-                s = '{},{:.7f}\n'.format(k, D[k])
-                testcsv.write(s)
-        testcsv.close()
+        self.save_results(test_L, {**test_metrics, **test_decomp_results}, testcsvname, write_headers=True)
         print('Metrics saved to {}'.format(testcsvname))
+        self.save_tensors(test_T)
+        print('Tensors saved to {}'.format(self.results_path))
+
+    def save_results(self, L, M, csvname, write_headers):
+        csv = open(csvname, 'w' if write_headers else 'a')
+        # D is a dictionary of metrics: string to float
+        k_list = list(L.keys()) + list(M.keys())
+        L_and_M = {**L, **M}
+        if write_headers:
+            s = ','.join(k_list) + '\n'
+            csv.write(s)
+        s = ','.join(['{:.7f}'.format(L_and_M[k]) for k in k_list]) + '\n'
+        csv.write(s)
+        csv.close()
 
     def save_tensors(self, D):
         for k in D:
             fname = os.path.join(self.results_path, '{}.npz'.format(k))
             np.savez(fname, X=D[k])
-        print('Tensors saved to {}'.format(self.results_path))
 
 def get_unbiased_tensor(minibatch, name):
     return np.concatenate([minibatch[name], minibatch['{}_unb'.format(name)]], axis=0)

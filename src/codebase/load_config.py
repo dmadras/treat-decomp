@@ -28,6 +28,7 @@ def load_model_config(args, dirs):
         'xdim': model_config_opts['xdim'],
         'ydim': 1,
         'tdim': 1,
+        'adim': 1,
         'hidden_layer_specs': {
             'activ': model_config_opts['activ'],
             'layer_sizes': [model_config_opts['num_hid_units'] for layer in range(args['num_hid_layers'])] 

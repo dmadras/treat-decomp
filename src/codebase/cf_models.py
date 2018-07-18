@@ -8,10 +8,11 @@ from codebase.tf_utils import *
 HIDDEN_LAYER_SPECS =  {'layer_sizes': [5], 'activ': 'elu'}
 
 class AbstractBaseCFNet(ABC):
-    def __init__(self, xdim, ydim, tdim, hidden_layer_specs, seed, **kwargs):
+    def __init__(self, xdim, ydim, tdim, adim, hidden_layer_specs, seed, **kwargs):
         self.xdim = xdim
         self.ydim = ydim
         self.tdim = tdim
+        self.adim = adim
         self.hidden_layer_specs = hidden_layer_specs
         self.seed = seed
         tf.set_random_seed(self.seed)
@@ -55,9 +56,9 @@ class AbstractBaseCFNet(ABC):
 
 class BinaryCFMLP(AbstractBaseCFNet):
 
-    def __init__(self, xdim, ydim, tdim, hidden_layer_specs, seed, **kwargs):
+    def __init__(self, xdim, ydim, tdim, adim, hidden_layer_specs, seed, **kwargs):
 
-        super().__init__(xdim, ydim, tdim, hidden_layer_specs, seed)
+        super().__init__(xdim, ydim, tdim, adim, hidden_layer_specs, seed)
         self.mlp = self._create_outcome_network('outcome_pred', 'model/preds', input_size=self.xdim + self.tdim)
         self.outcome_logits = self._get_outcome_logits()
         self.outcome_preds = self._get_outcome_preds()
@@ -74,6 +75,7 @@ class BinaryCFMLP(AbstractBaseCFNet):
         self.Y = tf.placeholder("float", [None, self.ydim], name='Y')
         self.Y_cf = tf.placeholder("float", [None, self.ydim], name='Y_cf')
         self.T = tf.placeholder("float", [None, self.tdim], name='T')
+        self.A = tf.placeholder("float", [None, self.adim], name='A')
         self.epoch = tf.placeholder("float", [1], name='epoch')
         return
 
@@ -115,11 +117,11 @@ class BinaryCFMLP(AbstractBaseCFNet):
 
 class BinaryCFDoubleMLP(BinaryCFMLP):
 
-    def __init__(self, xdim, ydim, tdim, hidden_layer_specs, seed, **kwargs):
-        AbstractBaseCFNet.__init__(self, xdim, ydim, tdim, hidden_layer_specs, seed)
+    def __init__(self, xdim, ydim, tdim, adim, hidden_layer_specs, seed, **kwargs):
+        AbstractBaseCFNet.__init__(self, xdim, ydim, tdim, adim, hidden_layer_specs, seed)
         self.mlp_0 = self._create_outcome_network('outcome_pred_0', 'model/preds', input_size=self.xdim)
         self.mlp_1 = self._create_outcome_network('outcome_pred_1', 'model/preds', input_size=self.xdim)
-        super().__init__(xdim, ydim, tdim, hidden_layer_specs, seed)
+        super().__init__(xdim, ydim, tdim, adim, hidden_layer_specs, seed)
 
     def _get_outcome_logits_from_treatment(self, x, t):
         logits0 = self.mlp_0.forward(x)

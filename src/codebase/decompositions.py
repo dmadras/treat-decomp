@@ -1,6 +1,6 @@
 import numpy as np
 from codebase.metrics import *
-
+from codebase.tracker import _subgroup_dict_items
 
 '''Want to be able to compute decomposition terms from epoch results.
 Input: a dictionary with results on the test set for normal, flipped, and unbiased data sets.
@@ -37,7 +37,7 @@ def calculate_policy_values(D):
             'V_treat': V_treat,
             'V_star': V_star}
 
-def calculate_policy_decomposition(D):
+def calculate_policy_decomposition_values(D):
     policy_values = calculate_policy_values(D)
     regret_from_databias = policy_values['V_sample'] - policy_values['V']
     regret_from_learning = policy_values['V_treat'] - policy_values['V']
@@ -49,7 +49,13 @@ def calculate_policy_decomposition(D):
              'V_regret_databias_optfn': regret_from_databias_optfn}
     return {**diffs, **policy_values}
 
+def calculate_policy_decomposition(D):
+    return get_subgroup_decomposition(D, calculate_policy_decomposition_values)
+
 def calculate_outcome_prediction_decomposition(D):
+    return get_subgroup_decomposition(D, calculate_outcome_prediction_decomposition_values)
+
+def calculate_outcome_prediction_decomposition_values(D):
     #L, L_do, treatment_shift: L_do = L + treatment_shift
     #L
     err_f = avg_ce(D['normal']['outcome'], D['normal']['outcome_pred'])
@@ -71,5 +77,13 @@ def calculate_outcome_prediction_decomposition(D):
     treatment_shift_loss = np.mean(np.multiply(delta_t_prob, L_unlikely_trmts - L_likely_trmts))
     return {'L': L, 'L_do': L_do, 'L_t_shift': treatment_shift_loss}
 
+   
+def get_subgroup_decomposition(D, fn):
+    decomps = fn(D)
+    D0 = {bias: _subgroup_dict_items(D[bias], 1 - D[bias]['A']) for bias in D}
+    D1 = {bias: _subgroup_dict_items(D[bias], D[bias]['A']) for bias in D}
+    decomps0 = {'A0_{}'.format(k): v for k, v in fn(D0).items()}
+    decomps1 = {'A1_{}'.format(k): v for k, v in  fn(D1).items()}
+    return {**decomps0, **decomps1, **decomps}
     
 

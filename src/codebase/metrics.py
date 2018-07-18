@@ -64,38 +64,41 @@ def errRate(Y, Ypred):
 def accuracy(Y, Ypred):
     return 1 - errRate(Y, Ypred)
 
-def subgroup(fn, mask, Y, Ypred=None, A=None):
+def subgroup(fn, mask, args):# Y, Ypred=None, A=None):
     m = np.greater(mask, 0.5).flatten()
-    Yf = Y.flatten()
-    if Ypred is None and A is None:
-        return fn(Yf[m])
-    elif not Ypred is None and A is None: #two-argument functions
-        Ypredf = Ypred.flatten()
-        return fn(Yf[m], Ypredf[m])
-    else: #three-argument functions
-        Ypredf = Ypred.flatten()
-        Af = A.flatten()
-        return fn(Yf[m], Ypredf[m], Af[m])
+    flat_args = [x.flatten() if hasattr(x, 'flatten') else x for x in args]
+    print(m, flat_args)
+    print(m.shape, [x.shape for x in flat_args])
+    return fn(*[x[m] for x in flat_args])
+    # if Ypred is None and A is None:
+    #     return fn(Yf[m])
+    # elif not Ypred is None and A is None: #two-argument functions
+    #     Ypredf = Ypred.flatten()
+    #     return fn(Yf[m], Ypredf[m])
+    # else: #three-argument functions
+    #     Ypredf = Ypred.flatten()
+    #     Af = A.flatten()
+    #     return fn(Yf[m], Ypredf[m], Af[m])
 
 def DI_FP(Y, Ypred, A):
-    fpr1 = subgroup(FPR, A, Y, Ypred)
-    fpr0 = subgroup(FPR, 1 - A, Y, Ypred)
+    fpr1 = subgroup(FPR, A, [Y, Ypred])
+    fpr0 = subgroup(FPR, 1 - A, [Y, Ypred])
     return abs(fpr1 - fpr0)
 
 def DI_FN(Y, Ypred, A):
-    fnr1 = subgroup(FNR, A, Y, Ypred)
-    fnr0 = subgroup(FNR, 1 - A, Y, Ypred)
+    fnr1 = subgroup(FNR, A, [Y, Ypred])
+    fnr0 = subgroup(FNR, 1 - A, [Y, Ypred])
     return abs(fnr1 - fnr0)
 
 
 def DI_FP_soft(Y, Ypred, A):
-    fpr1 = subgroup(FPR_soft, A, Y, Ypred)
-    fpr0 = subgroup(FPR_soft, 1 - A, Y, Ypred)
+    fpr1 = subgroup(FPR_soft, A, [Y, Ypred])
+    fpr0 = subgroup(FPR_soft, 1 - A, [Y, Ypred])
     return abs(fpr1 - fpr0)
 
 def DI_FN_soft(Y, Ypred, A):
-    fnr1 = subgroup(FNR_soft, A, Y, Ypred)
-    fnr0 = subgroup(FNR_soft, 1 - A, Y, Ypred)
+    fnr1 = subgroup(FNR_soft, A, [Y, Ypred])
+    fnr0 = subgroup(FNR_soft, 1 - A, [Y, Ypred])
     return abs(fnr1 - fnr0)
 
 def DI(Y, Ypred, A):
@@ -105,7 +108,7 @@ def DI_soft(Y, Ypred, A):
     return (DI_FN_soft(Y, Ypred, A) + DI_FP_soft(Y, Ypred, A)) * 0.5
 
 def DP(Ypred, A): #demographic disparity
-    return abs(subgroup(PR, A, Ypred) - subgroup(PR, 1 - A, Ypred))
+    return abs(subgroup(PR, [A, Ypred]) - subgroup(PR, [1 - A, Ypred]))
 
 
 def switch(x0, x1, s):
@@ -186,14 +189,14 @@ if __name__ == '__main__':
     assert np.isclose(calibNegRate(Y, Ypred) , 0.6)
     assert np.isclose(errRate(Y, Ypred) , 0.4)
     assert np.isclose(accuracy(Y, Ypred) , 0.6)
-    assert np.isclose(subgroup(TNR, A, Y, Ypred) , 0.5)
-    assert np.isclose(subgroup(pos, 1 - A, Ypred) , 2)
-    assert np.isclose(subgroup(neg, 1 - A, Y) , 3)
+    assert np.isclose(subgroup(TNR, A, [Y, Ypred]) , 0.5)
+    assert np.isclose(subgroup(pos, 1 - A, [Ypred]) , 2)
+    assert np.isclose(subgroup(neg, 1 - A, [Y]) , 3)
     assert np.isclose(DI_FP(Y, Ypred, A) , abs(1.0 / 6))
     assert np.isclose(DI_FP(Y, Ypred, 1 - A) , abs(1.0 / 6))
     assert np.isclose(DI_FN(Y, Ypred, A) , abs(1.0 / 6))
     assert np.isclose(DI_FN(Y, Ypred, 1 - A) , abs(1.0 / 6))
-    assert np.isclose(subgroup(accuracy, A, Y, Ypred), 0.6)
-    assert np.isclose(subgroup(errRate, 1 - A, Y, Ypred), 0.4)
+    assert np.isclose(subgroup(accuracy, A, [Y, Ypred]), 0.6)
+    assert np.isclose(subgroup(errRate, 1 - A, [Y, Ypred]), 0.4)
 
 
