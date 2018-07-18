@@ -8,16 +8,23 @@ def load_dirs_config(args):
     dirs = json.load(open(dirs_config_path, 'r'))
     return dirs
 
-def load_data_config(args, dirs):
+def load_data_config(args, dirs, generate):
     data_config_name = '{}.json'.format(args['dataset'])
     data_config_path = os.path.join(CONFIG_DIR, 'data', data_config_name)
     data_config_opts = json.load(open(data_config_path, 'r'))
     npz_path = os.path.join(dirs['data'], data_config_opts['npzfile'])
-    data_kwargs = {
-        'name': data_config_opts['name'],
-        'npzfile': npz_path.format(*[args[a] for a in data_config_opts["npz_format_args"]]),
-        'seed': args['data_random_seed']
-        }
+    if not generate:
+        data_kwargs = {
+            'name': data_config_opts['name'],
+            'npzfile': npz_path.format(*[args[a] for a in data_config_opts["npz_format_args"]]),
+            'seed': args['data_random_seed']
+            }
+    else:
+        data_kwargs = {
+            'name': data_config_opts['name'],
+            'npzfile': npz_path.format(*[args[a] for a in data_config_opts["npz_format_args"]]),
+            'data_gen_args': data_config_opts['data_generation_args']
+            }
     return data_kwargs
 
 def load_model_config(args, dirs):

@@ -1,10 +1,7 @@
 import numpy as np
 from scipy.stats import norm
-from dataproc.utils import sigmoid, save_tensors
+from dataproc.utils import sigmoid, save_tensors, generate_normal_data
 from codebase.utils import switch
-
-def generate_normal_data(mu, sd, n, xdim):
-    return np.random.normal(mu, sd, size=(n, xdim))
 
 def generate_outcomes(x):
     y0_prob = np.expand_dims(sigmoid(np.sum(x, axis=1) / 5.), 1)
@@ -59,14 +56,14 @@ def main(seed, num_data, xdim, mu0, mu1, sd0, sd1, p0):
     x0_cf, a0_cf, z0_cf = generate_counterfactual_data(x0, a0, z0, mu0, sd0, mu1, sd1)
     dat0 = get_treatment_outcome_data(x0, a0, z0) 
     dat0_cf = get_treatment_outcome_data(x0_cf, a0_cf, z0_cf) 
-    save_dict_f = {k: np.concatenate([dat0[k], dat1[k]], axis=0) for k in dat0}
     #make dataset 1
     x1, a1, z1 = generate_factual_data(mu1, sd1, n1, xdim, 1)    
     x1_cf, a1_cf, z1_cf = generate_counterfactual_data(x1, a1, z1, mu1, sd1, mu0, sd0)
     dat1 = get_treatment_outcome_data(x1, a1, z1) 
     dat1_cf = get_treatment_outcome_data(x1_cf, a1_cf, z1_cf) 
-    save_dict_cf = {k: np.concatenate([dat0_cf[k], dat1_cf[k]], axis=0) for k in dat0_cf}
     #save data
+    save_dict_f = {k: np.concatenate([dat0[k], dat1[k]], axis=0) for k in dat0}
+    save_dict_cf = {k: np.concatenate([dat0_cf[k], dat1_cf[k]], axis=0) for k in dat0_cf}
     save_dict = {}
     for k in save_dict_f: save_dict[k] = save_dict_f[k]
     for k in save_dict_cf: save_dict['{}_unb'.format(k)] = save_dict_cf[k]

@@ -50,7 +50,6 @@ class Trainer(object):
         tensor_dict = {tensor_names[i]: ret[i + len(loss_names)] for i in range(len(tensor_names))}
         return loss_dict, tensor_dict
 
-
     def make_feed_dict(self, minibatch, bias_type='normal'):
         feed_pairs = {'x': self.model.X, 'y_f': self.model.Y,
                 'y_cf': self.model.Y_cf, 't_f': self.model.T, 'a': self.model.A}
@@ -101,8 +100,8 @@ class Trainer(object):
 
     def create_res_str(self, epoch, L, M):
         ep_str = 'E{:d}: '.format(epoch) if not epoch is None else 'Final: '
-        res_str = ep_str + ', '.join(['{}:{:.3f}'.format(l, L[l]) for l in self.filter_keys(L)]) \
-                        + ', ' + ', '.join(['{}:{:.3f}'.format(m, M[m]) for m in self.filter_keys(M)])
+        res_str = ep_str + ', '.join(['{}:{:.3f}'.format(l, L[l]) for l in self.filter_keys(L)]) 
+                        # + ', ' + ', '.join(['{}:{:.3f}'.format(m, M[m]) for m in self.filter_keys(M)])
         return res_str
 
     def run_epoch_and_get_metrics(self, phase, tracker, epoch, bias_type='normal'):
@@ -125,7 +124,6 @@ class Trainer(object):
             train_L, train_T, train_metrics, train_res_str = self.run_epoch_and_get_metrics('train', tracker, epoch)
             valid_L, valid_T, valid_metrics, valid_res_str = self.run_epoch_and_get_metrics('valid', tracker, epoch)
 
-
             #do decomposition tracking on test set
             test_decomp_results = self.get_loss_decompositions('test', tracker, epoch)
 
@@ -147,8 +145,8 @@ class Trainer(object):
             print(msg)
             self.save_results(train_L, {**train_metrics, **test_decomp_results}, train_metrics_log, write_headers=epoch == 0)
             self.save_results(valid_L, {**valid_metrics, **test_decomp_results}, valid_metrics_log, write_headers=epoch == 0)
-            print('Metrics saved to {}'.format(train_metrics_log))
-            print('Metrics saved to {}'.format(valid_metrics_log))
+            # print('Metrics saved to {}'.format(train_metrics_log))
+            # print('Metrics saved to {}'.format(valid_metrics_log))
 
             #if min validation loss, checkpoint model
             l = valid_L['loss']

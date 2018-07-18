@@ -1,5 +1,16 @@
 {
     "name": "synth_basic",
     "npzfile": "synth_treatments_basic/synth_treatments_basic.npz",
-    "npz_format_args": []
+    "npz_format_args": [],
+    "data_generation_args": {
+        "seed": 0,
+        "creator_class": "BasicSynthDatasetCreator",
+        "num_data": 10000,
+        "xdim": 10,
+        "mu0": -1,
+        "mu1": 1,
+        "sd0": 2,
+        "sd1": 2,
+        "p0": 0.7
+    } 
 }

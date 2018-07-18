@@ -1,0 +1,5 @@
+made plotting functions to display progress on decompositions through epochs
+also tracking splits by A and diff between values of A
+created object for dataset generator
+generator matches old code
+moved all data generation paramaters into the json file under data_generation_args
