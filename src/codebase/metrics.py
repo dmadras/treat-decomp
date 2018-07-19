@@ -67,8 +67,8 @@ def accuracy(Y, Ypred):
 def subgroup(fn, mask, args):# Y, Ypred=None, A=None):
     m = np.greater(mask, 0.5).flatten()
     flat_args = [x.flatten() if hasattr(x, 'flatten') else x for x in args]
-    print(m, flat_args)
-    print(m.shape, [x.shape for x in flat_args])
+    # print(m, flat_args)
+    # print(m.shape, [x.shape for x in flat_args])
     return fn(*[x[m] for x in flat_args])
     # if Ypred is None and A is None:
     #     return fn(Yf[m])

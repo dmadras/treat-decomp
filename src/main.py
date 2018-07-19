@@ -24,7 +24,7 @@ args = vars(parser.parse_args())
 
 # get params
 dirs = load_dirs_config(args) 
-data_kwargs = load_data_config(args, dirs)
+data_kwargs = load_data_config(args, dirs, generate=False)
 model_kwargs = load_model_config(args, dirs)
 
 #get dataset

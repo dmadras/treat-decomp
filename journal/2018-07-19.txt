@@ -1,0 +1,4 @@
+new synth data
+when I run with 3 units in model, I underfit on offset data; this yields high discrim. in the function learning regret, but none in the dataset bias regret
+5 units fixes it; lower overall loss, and lower discrim everywhere, esp in fnlearn
+3 or 5 units doesnt make a difference on synth_basic

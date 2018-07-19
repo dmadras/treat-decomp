@@ -1,10 +1,10 @@
 {
-    "name": "synth_basic",
-    "npzfile": "synth_treatments_basic/synth_treatments_basic.npz",
+    "name": "synth_confa_trmt",
+    "npzfile": "synth_confa_trmt/synth_confa_trmt.npz",
     "npz_format_args": [],
     "data_generation_args": {
         "seed": 0,
-        "creator_class": "BasicSynthDatasetCreator",
+        "creator_class": "ConfoundedTreatmentBasicSynthDatasetCreator",
         "num_data": 10000,
         "xdim": 10,
         "mu0": -1,
@@ -12,6 +12,7 @@
         "sd0": 2,
         "sd1": 2,
         "p0": 0.7,
-        "outcome_scale": 2.0
+        "outcome_scale": 2.0,
+        "treatment_offset": 3.0
     } 
 }

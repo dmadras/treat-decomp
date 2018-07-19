@@ -26,5 +26,6 @@ track_groups = {**base_groups, **a0_groups, **a1_groups}
 track_pairs = {k: {m: ('A0_{}'.format(m), 'A1_{}'.format(m)) for m in base_groups[k]} for k in base_groups}
 settings = {'plot': {}}
 track_decompositions(expdir, figdir, track_groups, track_pairs, settings)
+print('Saved plots to {}'.format(figdir))
 
 

@@ -38,7 +38,7 @@ def plot_pairs(x, inds, ind_names, settings, figname):
         plot_data = plot_data_1 - plot_data_0
         plt.plot(plot_data, label=i_name, **settings['plot'])
     plt.legend()
-    plotdat = np.concatenate([x[4:,i[1]] - x[4:,i[0]] for i in inds])
+    plotdat = np.concatenate([x[9:,i[1]] - x[9:,i[0]] for i in inds])
     plt.ylim([np.min(plotdat) - np.std(plotdat), np.max(plotdat) + np.std(plotdat)])
     plt.xlabel('Epoch')
     plt.ylabel('Metric Value - Diff (1 - 0)')
