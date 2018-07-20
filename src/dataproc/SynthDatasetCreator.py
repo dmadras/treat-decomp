@@ -84,17 +84,24 @@ class BasicSynthDatasetCreator(SynthDatasetCreator):
         t_obs, t_obs_cf, t_obs_prob = self.choose_observed_treatment(x, a, z)
         y_factual = np.multiply(y0, 1 - t_obs) + np.multiply(y1, t_obs)
         y_counterfactual = np.multiply(y0, t_obs) + np.multiply(y1, 1 - t_obs)
-        bayes_opt_pred_f, bayes_opt_pred_cf = self.calculate_bayes_opt(y0_prob, y1_prob, t_obs, t_obs_cf)
-        return {'X': x, 'Y': np.concatenate([y0, y1], axis=1), 'A': a, 'y0': y0, 'y1': y1, \
+        bayes_opt_pred_f, bayes_opt_pred_cf, bayes_opt_trmt_by_num, bayes_opt_trmt_by_fcf = self.calculate_bayes_opt(y0_prob, y1_prob, t_obs, t_obs_cf)
+        y_prob_factual = np.multiply(y0_prob, 1 - t_obs) + np.multiply(y1_prob, t_obs)
+        y_prob_counterfactual = np.multiply(y0_prob, t_obs) + np.multiply(y1_prob, 1 - t_obs)
+        # hacky_bayes = bayes_opt_pred_f > bayes_opt_pred_cf
+        return {'X': x, 'Y': np.concatenate([y0, y1], axis=1), 'A': a, 'y0': y0, 'y1': y1, 
                 'T_f': t_obs, 'T_cf': t_obs_cf, 'Y_f': y_factual, 'Y_cf': y_counterfactual, 'Z': z, 
-                'bayes_f': bayes_opt_pred_f, 'bayes_cf': bayes_opt_pred_cf, 'T_prob': t_obs_prob}
+                'bayes_f': bayes_opt_pred_f, 'bayes_cf': bayes_opt_pred_cf, 'bayes_trmt': bayes_opt_trmt_by_fcf,
+                'bayes_trmt_num': bayes_opt_trmt_by_num, 'T_prob': t_obs_prob}
 
     def calculate_bayes_opt(self, y0_prob, y1_prob, t_obs, t_obs_cf):
         bayes_opt_pred_t0 = np.round(y0_prob)
         bayes_opt_pred_t1 = np.round(y1_prob)
         bayes_opt_pred_f = switch(bayes_opt_pred_t0, bayes_opt_pred_t1, t_obs)
         bayes_opt_pred_cf = switch(bayes_opt_pred_t0, bayes_opt_pred_t1, t_obs_cf)
-        return bayes_opt_pred_f, bayes_opt_pred_cf
+        bayes_opt_trmt_by_num = (y1_prob > y0_prob).astype(float)
+        bayes_opt_trmt_by_fcf = switch(y0_prob > y1_prob, y1_prob > y0_prob, t_obs)
+        # bayes_opt_trmt_by_fcf = switch(1 - bayes_opt_trmt_by_num, bayes_opt_trmt_by_num, np.equal(bayes_opt_trmt_by_num > 0.5, t_obs > 0.5))
+        return bayes_opt_pred_f, bayes_opt_pred_cf, bayes_opt_trmt_by_num, bayes_opt_trmt_by_fcf
 
     def choose_observed_treatment(self, x, a, z):
         t_obs_prob = np.expand_dims(sigmoid(np.mean(x, axis=1) / self.outcome_scale), 1) 

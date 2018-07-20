@@ -1,6 +1,6 @@
 {
-    "name": "synth_offset_outcome",
-    "npzfile": "synth_offset_outcome/synth_offset_outcome.npz",
+    "name": "synth_offset",
+    "npzfile": "synth_offset/synth_offset.npz",
     "npz_format_args": [],
     "data_generation_args": {
         "seed": 0,

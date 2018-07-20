@@ -20,9 +20,11 @@ class Dataset(object):
             self.dat = dat
             phases = ['train', 'valid', 'test']
             self.name_mapping = {'x': 'X', 'y_values': 'Y', 'a': 'A', 't_f': 'T_f', 't_cf': 'T_cf', 'y0': 'y0','y1': 'y1',  \
-                    'y_f': 'Y_f', 'y_cf': 'Y_cf', 'z': 'Z', 'bayes_f': 'bayes_f', 'bayes_cf': 'bayes_cf', 't_prob': 'T_prob', \
+                    'y_f': 'Y_f', 'y_cf': 'Y_cf', 'z': 'Z', 'bayes_f': 'bayes_f', 'bayes_cf': 'bayes_cf', 
+                    'bayes_trmt': 'bayes_trmt', 'bayes_trmt_num': 'bayes_trmt_num', 't_prob': 'T_prob', \
                             'x_unb': 'X_unb', 'y_values_unb': 'Y_unb', 'a_unb': 'A_unb', 't_f_unb': 'T_f_unb', 't_cf_unb': 'T_cf_unb', \
-                            'y_f_unb': 'Y_f_unb', 'y_cf_unb': 'Y_cf_unb', 'z_unb': 'Z_unb', 'bayes_f_unb': 'bayes_f_unb', 'bayes_cf_unb': 'bayes_cf_unb', \
+                            'y_f_unb': 'Y_f_unb', 'y_cf_unb': 'Y_cf_unb', 'z_unb': 'Z_unb', 'bayes_f_unb': 'bayes_f_unb', 
+                            'bayes_cf_unb': 'bayes_cf_unb', 'bayes_trmt_unb': 'bayes_trmt_unb', 'bayes_trmt_num_unb': 'bayes_trmt_num_unb',\
                             't_prob_unb': 'T_prob_unb'}
             self.tensors = {name: {phase: dat['{}_{}'.format(self.name_mapping[name], phase)] for phase in phases} for name in self.name_mapping}
             self.loaded = True

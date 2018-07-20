@@ -26,3 +26,7 @@ for tnm in tensor_names:
     print('Avg {} (A = 1): {:.3f}'.format(tnm, res))
     res = subgroup(np.mean, 1 - dat.tensors['a']['train'], [dat.tensors[tnm]['train']]) 
     print('Avg {} (A = 0): {:.3f}'.format(tnm, res))
+
+# for phase in ['train', 'valid', 'test']:
+#     bayes_acc = np.mean(np.equal(dat.tensors['bayes_f'][phase], dat.tensors['y_f'][phase]))
+#     print('{} Bayes Acc: {:.3f}'.format(phase, bayes_acc))

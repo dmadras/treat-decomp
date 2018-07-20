@@ -27,10 +27,10 @@ def calculate_policy_values(D):
     trmt_sample = choose_treatment(D['unbiased']['cf_outcome_pred'], D['unbiased']['outcome_pred'])
     V_sample = calculate_value(trmt_sample, D['unbiased']['cf_outcome'], D['unbiased']['outcome'])
     #calculate value of optimal policy on observed sample
-    trmt_treat = choose_treatment(D['normal']['bayes_cf'], D['normal']['bayes_f'])
+    trmt_treat = D['normal']['bayes_trmt'] #choose_treatment(D['normal']['bayes_cf'], D['normal']['bayes_f'])
     V_treat = calculate_value(trmt_treat, D['normal']['cf_outcome'], D['normal']['outcome'])
     #calculate value of optimal policy on unbiased sample
-    trmt_star = choose_treatment(D['unbiased']['bayes_cf'], D['unbiased']['bayes_f'])
+    trmt_star = D['unbiased']['bayes_trmt'] #choose_treatment(D['unbiased']['bayes_cf'], D['unbiased']['bayes_f'])
     V_star = calculate_value(trmt_star, D['unbiased']['cf_outcome'], D['unbiased']['outcome'])
     return {'V': V,
             'V_sample': V_sample,

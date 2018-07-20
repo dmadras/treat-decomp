@@ -37,7 +37,7 @@ class BinaryMLPTracker(Tracker):
 
 
     def _get_track_tensor_names(self):
-        return ['y_cf', 'bayes_f', 'bayes_cf', 't_prob']        
+        return ['y_cf', 'bayes_f', 'bayes_cf', 'bayes_trmt',  't_prob']        
 
 class BinaryCFMLPTracker(Tracker):
 
@@ -64,7 +64,7 @@ class BinaryCFMLPTracker(Tracker):
         return metrics
 
     def _get_track_tensor_names(self):
-        return ['y_cf', 'bayes_f', 'bayes_cf', 't_prob']        
+        return ['y_cf', 'bayes_f', 'bayes_cf', 'bayes_trmt', 't_prob']        
 
 
     
