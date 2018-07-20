@@ -20,3 +20,6 @@ def sigmoid(x):
 def generate_normal_data(mu, sd, n, xdim):
     return np.random.normal(mu, sd, size=(n, xdim))
 
+def generate_bernoulli_data(p, n, dim):
+    return np.random.binomial(1, p, size=(n, dim))
+

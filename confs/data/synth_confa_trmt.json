@@ -13,6 +13,6 @@
         "sd1": 2,
         "p0": 0.7,
         "outcome_scale": 2.0,
-        "treatment_offset": 3.0
+        "treatment_offset": 10.0
     } 
 }

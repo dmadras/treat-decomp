@@ -1,0 +1,2 @@
+okay, in corrAZ we are finally getting non-zero data bias terms. progress!
+why are we getting higher values than the bayes optimal? look into this

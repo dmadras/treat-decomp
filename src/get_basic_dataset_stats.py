@@ -18,7 +18,7 @@ datadir = dirs['data']
 npzfilename = data_kwargs['npzfile']
 
 dat = Dataset(args['dataset'], npzfilename) 
-tensor_names = ['y_f', 'y_cf', 't_f', 'y0', 'y1']
+tensor_names = ['y_f', 'y_cf', 't_f', 'y0', 'y1', 'z']
 for tnm in tensor_names:
     res = np.mean(dat.tensors[tnm]['train'])
     print('Avg {}: {:.3f}'.format(tnm, res))

@@ -2,3 +2,17 @@ new synth data
 when I run with 3 units in model, I underfit on offset data; this yields high discrim. in the function learning regret, but none in the dataset bias regret
 5 units fixes it; lower overall loss, and lower discrim everywhere, esp in fnlearn
 3 or 5 units doesnt make a difference on synth_basic
+should run an experiment looking at the effect of a) changing dataset size, b) changing model capactiy, c) changing dataset imbalance
+thinking abt this ... all of the examples Ive done so far are the case where all variables are caused by A. So counterfactuals are trivial - just map distributions. This is why my dataset bias is small, even when I mess with the label and treatment variables between groups!
+so next step is to do more interesting counterfactuals - maybe just one or two causally affected variables
+more thoughts: dataset bias is caused when one group is historically high-reward, the other is low. Why might this be? Could be mis-labelled (when A has causal impact on labels e.g. policing), or bad historical treatment mechanism (bias e.g. poor understanding of that group, variance e.g. not sure this makes sense, but could connect to feedback loops, noise e.g. inherently more difficult problem, needed more variables). What about healthcare scenarios, where do they come in?
+another possibility for dataset bias is hidden confounding variables. If black people are usually at a worse hospital, their reward on a more complicated treatment may be lower, which a model may conflate with black ppls propensity to respond to that treatment. So the counterfactual of a white person will have the latents of white ppl (including a better hospital), which will result in better reward. Whats unclear is if this will be classified correctly by the model ... seems like it will be. So why doesnt it work?
+This is policy creep... need to somehow relate it to my model
+The problem is that my model assumes that the distribution over latents P(Z) is the same in train and test. But maybe it isnt? Is the hospital a latent?
+H has to be correlated with A, unobserved, and an input to the T and/or Y functions. Where does that go?
+OK - the hospital can be a latent in Z. only weird part is whether or not Z causes A, but we can work around that (either deal with it, or bring out an even high layer of latents)
+Now, will the observable vector X be classified correctly by the model in the counterfactual race scenario? That depends: if H correlates with the causally-affected-by-A features of X, then no; if H correlates only with the not-causally-affected-by-A features of X, then yes. I guess it would correlate with both in this scenario ... so its a possibility for dataset bias
+But we would have to do this in the regime where Z of the new distribution is different from the old distribution. Thats not what Ive set up. Lets come back to this, think about it later. At the very least can mention it and frame it in this way. Also, the paper isnt really about distributional shift which is what policy creep is
+for policy creep could additionally have a Z-shift term?????
+Whatever, its not within the scope of the paper. I think thats fair
+BUT we can say that you have to extract out a higher latent variable Omega. Then Z, A can be correlated, and the distribution of Omega can shift

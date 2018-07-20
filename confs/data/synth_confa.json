@@ -1,0 +1,19 @@
+{
+    "name": "synth_confa",
+    "npzfile": "synth_confa/synth_confa.npz",
+    "npz_format_args": [],
+    "data_generation_args": {
+        "seed": 0,
+        "creator_class": "ConfoundedSynthDatasetCreator",
+        "num_data": 10000,
+        "xdim": 10,
+        "mu0": -1,
+        "mu1": 1,
+        "sd0": 2,
+        "sd1": 2,
+        "p0": 0.7,
+        "outcome_scale": 2.0,
+        "treatment_offset": 10.0,
+        "offset": 3.0
+    } 
+}

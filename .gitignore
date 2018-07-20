@@ -5,3 +5,4 @@ tfboard_logs/*
 *.swp
 *DS_Store
 *.nfs*
+*.swo
