@@ -2,3 +2,6 @@ okay, in corrAZ we are finally getting non-zero data bias terms. progress!
 why are we getting higher values than the bayes optimal? look into this
 reminder: independently optimally estimating each outcome and then taking the max is not the way to get a Bayes optimal treatment
 bayes optimal treatments are being calculated correctly now
+reran and plotted all the synth stuff again
+synth_confa is a good example of high discrimination in Vstar; this means just need to go get more variables
+Q: can I create an example which is high data bias and low fnlearn bias? high fnlearn bias and low databias?
