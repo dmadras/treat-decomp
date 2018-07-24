@@ -164,7 +164,10 @@ def absErrATE(y, cf_y, t, y_pred, cf_y_pred):
     return np.abs(true_ate - est_ate)
 
 def AUC(y, ypred):
-    return roc_auc_score(y, ypred)
+    try:
+        return roc_auc_score(y, ypred)
+    except:
+        return 1. #all one class in y_true - can trivially get 100% accuracy
 
 
 if __name__ == '__main__':

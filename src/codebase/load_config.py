@@ -1,11 +1,16 @@
 import json
 import os
+from codebase.utils import make_dir_if_not_exist
 
 CONFIG_DIR = 'confs'
 
-def load_dirs_config(args):
+def load_dirs_config(args, sweep_name=None):
     dirs_config_path = os.path.join(CONFIG_DIR, 'dirs', args['dirconf'])
     dirs = json.load(open(dirs_config_path, 'r'))
+    if not sweep_name is None:
+        dirs['exp'] = os.path.join(dirs['exp'], sweep_name)
+        dirs['log'] = os.path.join(dirs['log'], sweep_name)
+    for nm in dirs: make_dir_if_not_exist(dirs[nm])
     return dirs
 
 def load_data_config(args, dirs, generate, overrides=''):
@@ -52,10 +57,11 @@ def override(main_kwargs, overrides, override_key):
     ov_list = [o.split('=') for o in overrides.split(',')] if overrides != '' else []
     print(ov_list)
     ov_info = {o[0]: o[1] for o in ov_list}
-    print(ov_info, ov_list)
+    print(ov_info, ov_list, main_kwargs)
     for k in ov_info:
         k_info = k.split('.')
         if k_info[0] == override_key:
+            print(k_info)
             assert k_info[1] in main_kwargs
             main_kwargs[k_info[1]] = convert_to_type(ov_info[k], main_kwargs[k_info[1]])
     return main_kwargs

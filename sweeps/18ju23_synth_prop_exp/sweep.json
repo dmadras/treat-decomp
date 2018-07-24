@@ -1,0 +1,14 @@
+{
+    "sweep_name": "18ju23_synth_prop_exp_datagen_p0",
+    "script_name": "src/run_datagen_and_main.py",
+    "dataset": ["synth_corraz", "synth_confhid"],
+    "model": "BinaryCFMLP",
+    "num_hid_layers": 1,
+    "random_seed": [0, 1, 2],
+    "overrides": {
+        "datagen.p0": [0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995],
+        "datagen.num_data": [1000, 10000],
+        "datagen.xdim": 10,
+        "model.num_hid_units": 5
+    }
+}

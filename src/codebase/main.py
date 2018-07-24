@@ -11,6 +11,9 @@ def main(args, dirs, data_kwargs, model_kwargs):
     data = Dataset(**data_kwargs)
     print('Dataset loaded from {}.'.format(dirs['data']))
 
+    #adaptively set xdim in model
+    model_kwargs['xdim'] = data.get_data_dim()
+
     #get model
     if args['model'] == 'BinaryCFMLP':
         model = BinaryCFMLP(**model_kwargs)
@@ -36,5 +39,6 @@ def main(args, dirs, data_kwargs, model_kwargs):
         trainer.test()
 
     #save args
+    args['resdir'] = resdirname
     args_path = os.path.join(resdirname, 'args.json')
     json.dump(args, open(args_path, 'w'))

@@ -37,6 +37,9 @@ class Dataset(object):
         iterator = DatasetIterator(tensors, names,  batch_inds)
         return iterator
 
+    def get_data_dim(self):
+        return self.tensors['x']['train'].shape[1]
+
     # def centre_and_scale(self):
     #     x_means = np.mean(self.x['train'], axis=0)
     #     x_sds = np.std(self.x['train'], axis=0)
